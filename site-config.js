@@ -117,6 +117,7 @@ window.TNWC = {
     {
       "name": "Tony Griffin",
       "role": "Coach",
+      "bio": "Two-time Virginia state champion; wrestled at Penn State.",
       "photo": "./coach-tony-illustrated.png",
       "photoAlt": "Illustrated portrait of Tony Griffin"
     },
@@ -161,7 +162,7 @@ window.TNWC = {
     {
       "name": "Elijah Flasher",
       "role": "Assistant coach",
-      "bio": "Shares wrestling knowledge with athletes across ages and experience levels."
+      "bio": "Wrestled for Coach Nauman at Middletown and wrestled at Millersville and Elizabethtown."
     }
   ],
   "practices": [

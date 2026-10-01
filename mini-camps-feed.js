@@ -24,29 +24,44 @@
     if(`${p.year}-${p.month}-${p.day}`!==date || `${p.hour}:${p.minute}`!==time)throw Error('Invalid Eastern time');
     return iso;
   }
-  function read(text,schema){
+  function read(text,schema,kind='Camp'){
+    if(!['Camp','Clinic','Tournament'].includes(kind))throw Error('Invalid event type');
     if(schema.type!=='object'||!schema.properties||!schema['x-sheet-columns'])throw Error('Camp schema unavailable');
     const rows=csv(text),columns=schema['x-sheet-columns'];
-    const headerIndex=rows.findIndex(r=>Object.keys(columns).every(h=>r.includes(h)));
+    const headerIndex=rows.findIndex(r=>Object.keys(columns).every(h=>r.includes(h)||(h==='Camp'&&r.includes('Event'))));
     if(headerIndex<0)throw Error('Camp headings changed');
     const headers=rows[headerIndex],errors=[],valid=[];
     rows.slice(headerIndex+1).forEach((values,index)=>{
       const rowNumber=headerIndex+index+2;
-      if(!String(values[headers.indexOf('Camp')]||'').trim())return;
+      const titleHeader=headers.includes('Event')?'Event':'Camp';
+      if(!String(values[headers.indexOf(titleHeader)]||'').trim())return;
       const obj={};
-      Object.entries(columns).forEach(([header,key])=>{const str=String(values[headers.indexOf(header)]||'').trim();obj[key]=['number','integer'].includes(schema.properties[key].type)?(str===''?NaN:Number(str)):str;});
+      Object.entries(columns).forEach(([header,key])=>{const str=String(values[headers.indexOf(header==='Camp'?titleHeader:header)]||'').trim();obj[key]=['number','integer'].includes(schema.properties[key].type)?(str===''?NaN:Number(str)):str;});
+      const extra=h=>String(values[headers.indexOf(h)]||'').trim();
+      const allDay=extra('All day').toUpperCase()==='TRUE';
+      const endDate=extra('End date')||obj.date;
+      const teamLink=extra('Team signup link');
       if(obj.status==='Draft')return;
       try{
         for(const [key,rule] of Object.entries(schema.properties)){
           const v=obj[key];
+          if(allDay && ['startTime','endTime'].includes(key))continue;
+          if(kind!=='Camp' && ['fee','capacity'].includes(key) && extra(key==='fee'?'Price':'Capacity')==='')continue;
           if(rule.type==='string' && (typeof v!=='string'||v.length<(rule.minLength||0)||v.length>(rule.maxLength||Infinity)||rule.pattern&&!new RegExp(rule.pattern).test(v)))throw Error('Check '+key);
           if(['number','integer'].includes(rule.type) && (!Number.isFinite(v)||v<(rule.minimum??-Infinity)||rule.type==='integer'&&!Number.isInteger(v)))throw Error('Check '+key);
           if(rule.enum&&!rule.enum.includes(v))throw Error('Check '+key);
         }
-        const start=eastern(obj.date,obj.startTime,schema['x-timezone']),end=eastern(obj.date,obj.endTime,schema['x-timezone']);
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(endDate)||endDate<obj.date)throw Error('Check end date');
+        eastern(endDate,'12:00',schema['x-timezone']);
+        if(teamLink&&!new RegExp(schema.properties.registrationUrl.pattern).test(teamLink))throw Error('Check team signup link');
+        if(extra('All day')&&!['TRUE','FALSE'].includes(extra('All day').toUpperCase()))throw Error('Check All day');
+        const nextDate=new Date(endDate+'T12:00:00Z');nextDate.setUTCDate(nextDate.getUTCDate()+1);
+        const start=eastern(obj.date,allDay?'00:00':obj.startTime,schema['x-timezone']),end=eastern(allDay?nextDate.toISOString().slice(0,10):endDate,allDay?'00:00':obj.endTime,schema['x-timezone']);
         if(Date.parse(end)<=Date.parse(start))throw Error('End must be after start');
         const testOnly=/\bTEST ONLY\b/i.test(obj.title+' '+obj.description);
-        valid.push({id:obj.id,title:obj.title,kind:'Camp',start,end,location:obj.location,fee:obj.fee,capacity:obj.capacity,description:obj.description+` $${obj.fee} per wrestler · Limited to ${obj.capacity} wrestlers.`,registrationUrl:obj.status==='Cancelled'||testOnly?'':obj.registrationUrl,registrationVerified:!!obj.registrationUrl&&!testOnly,cancelled:obj.status==='Cancelled',testOnly,rowNumber});
+        const price=Number.isFinite(obj.fee)?` $${obj.fee} per wrestler.`:' Fee: confirm with the club.';
+        const capacity=Number.isFinite(obj.capacity)?` Limited to ${obj.capacity} wrestlers.`:'';
+        valid.push({id:obj.id,title:obj.title,kind,start,end,allDay,location:obj.location,fee:obj.fee,capacity:obj.capacity,description:obj.description+price+capacity,registrationUrl:obj.status==='Cancelled'||testOnly?'':obj.registrationUrl,teamRegistrationUrl:obj.status==='Cancelled'||testOnly?'':teamLink,registrationVerified:!!obj.registrationUrl&&!testOnly,cancelled:obj.status==='Cancelled',testOnly,rowNumber});
       }catch(error){errors.push({row:rowNumber,message:error.message});}
     });
     const counts=new Map();valid.forEach(e=>counts.set(e.id,(counts.get(e.id)||0)+1));

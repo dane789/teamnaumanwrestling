@@ -116,34 +116,43 @@
   });
   window.addEventListener('popstate',()=>{ $('event-filter').value=selectedEventKind(); events(); });
   events();
-  // Read only the separately published, public Mini Camp Sheet.
-  let campFeedBusy = false;
-  const campFeedNote = document.createElement('p');
-  campFeedNote.setAttribute('role','status'); campFeedNote.hidden = !c.miniCampFeedUrl;
-  $('event-filter').parentElement.insertAdjacentElement('afterend',campFeedNote);
-  if(c.miniCampFeedUrl) { c.events=c.events.filter(e=>e.kind!=='Camp'); events(); campFeedNote.textContent='Loading the latest camp schedule…'; }
-  async function refreshMiniCamps() {
-    if(!c.miniCampFeedUrl || campFeedBusy) return;
-    campFeedBusy = true;
-    const controller = new AbortController(); const timeout = setTimeout(()=>controller.abort(),20000);
+  // Public event details only; each worksheet is refreshed independently.
+  const feeds = c.hostedEventFeeds || (c.miniCampFeedUrl ? [{kind:'Camp',label:'Mini Camps',url:c.miniCampFeedUrl}] : []);
+  let feedBusy = false;
+  const feedNote = document.createElement('p');
+  feedNote.setAttribute('role','status'); feedNote.hidden = !feeds.length;
+  $('event-filter').parentElement.insertAdjacentElement('afterend',feedNote);
+  if(feeds.length) { c.events=c.events.filter(e=>e.travel || !feeds.some(f=>f.kind===e.kind)); events(); feedNote.textContent='Loading the latest hosted event schedule…'; }
+  async function refreshHostedEvents() {
+    if(!feeds.length || feedBusy) return;
+    feedBusy = true;
+    const controller = new AbortController(), timeout = setTimeout(()=>controller.abort(),20000);
     try {
-      const endpoint = new URL(c.miniCampFeedUrl);
-      if(endpoint.protocol!=='https:' || endpoint.hostname!=='docs.google.com' || !endpoint.pathname.endsWith('/pub') || endpoint.searchParams.get('output')!=='csv') throw Error('Invalid camp feed');
-      endpoint.searchParams.set('_refresh',Date.now());
-      const responses = await Promise.all([
-        fetch(endpoint.href,{cache:'no-store',credentials:'omit',signal:controller.signal}),
-        fetch('./mini-camps.schema.json',{signal:controller.signal})
-      ]);
-      if(responses.some(r=>!r.ok))throw Error('Camp schedule unavailable');
-      const incoming = window.TNWCCampFeed.read(await responses[0].text(),await responses[1].json());
-      c.events = c.events.filter(e=>e.kind!=='Camp').concat(incoming.events);
-      campFeedNote.textContent = incoming.errors.length ? 'Some camp details are awaiting confirmation. Contact the club if your camp is missing.' : 'Camp schedule updated '+new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZone:c.timezone}).format(new Date())+' ET.';
+      const response=await fetch('./mini-camps.schema.json',{signal:controller.signal});
+      if(!response.ok)throw Error('Event schema unavailable');
+      const schema=await response.json();
+      const results=await Promise.allSettled(feeds.map(async feed=>{
+        const endpoint=new URL(feed.url);
+        if(endpoint.protocol!=='https:' || endpoint.hostname!=='docs.google.com' || !endpoint.pathname.endsWith('/pub') || endpoint.searchParams.get('output')!=='csv')throw Error('Invalid event feed');
+        endpoint.searchParams.set('_refresh',Date.now());
+        const response=await fetch(endpoint.href,{cache:'no-store',credentials:'omit',signal:controller.signal});
+        if(!response.ok)throw Error('Event feed unavailable');
+        return window.TNWCCampFeed.read(await response.text(),schema,feed.kind);
+      }));
+      const unavailable=[],warnings=[];
+      results.forEach((result,index)=>{
+        const feed=feeds[index];
+        c.events=c.events.filter(e=>e.travel || e.kind!==feed.kind);
+        if(result.status==='fulfilled') { c.events.push(...result.value.events); if(result.value.errors.length)warnings.push(feed.label); }
+        else unavailable.push(feed.label);
+      });
+      feedNote.textContent=unavailable.length ? unavailable.join(', ')+' schedule temporarily unavailable. Check with the club before visiting.' : warnings.length ? 'Some '+warnings.join(', ')+' details await confirmation. Contact the club if your event is missing.' : 'Hosted event schedule updated '+new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZone:c.timezone}).format(new Date())+' ET.';
     } catch(error) {
-      c.events = c.events.filter(e=>e.kind!=='Camp');
-      campFeedNote.textContent = 'The latest camp schedule is temporarily unavailable. Please check with the club before visiting.';
-    } finally { clearTimeout(timeout); campFeedBusy = false; events(); featuredEvent(); }
+      c.events=c.events.filter(e=>e.travel || !feeds.some(f=>f.kind===e.kind));
+      feedNote.textContent='The hosted event schedule is temporarily unavailable. Please check with the club before visiting.';
+    } finally { clearTimeout(timeout); feedBusy=false; events(); featuredEvent(); }
   }
-  refreshMiniCamps(); setInterval(refreshMiniCamps,60000);
+  refreshHostedEvents(); setInterval(refreshHostedEvents,60000);
   // Refresh expiring notices and deadlines while a visitor leaves the page open.
   function announcements() {
     const live = c.announcements.filter(a => Date.parse(a.expires) > Date.now());

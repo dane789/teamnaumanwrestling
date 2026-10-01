@@ -3,7 +3,23 @@ window.TNWC = {
   "contactEmail": "teamnaumanwrestlingclub@gmail.com",
   "contactPhone": "",
   "calendarId": "",
-  "miniCampFeedUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTmj2TK_XHD27j9weNqii6wHwyCNwcs3_wJ4kguPJtYvHOffRzb7y2l_dTOUppvxUjkLwSCIGWXvH2U/pub?gid=811550899&single=true&output=csv",
+  "hostedEventFeeds": [
+    {
+      "kind": "Camp",
+      "label": "Mini Camps",
+      "url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTmj2TK_XHD27j9weNqii6wHwyCNwcs3_wJ4kguPJtYvHOffRzb7y2l_dTOUppvxUjkLwSCIGWXvH2U/pub?gid=811550899&single=true&output=csv"
+    },
+    {
+      "kind": "Clinic",
+      "label": "Clinics",
+      "url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTmj2TK_XHD27j9weNqii6wHwyCNwcs3_wJ4kguPJtYvHOffRzb7y2l_dTOUppvxUjkLwSCIGWXvH2U/pub?gid=392483489&single=true&output=csv"
+    },
+    {
+      "kind": "Tournament",
+      "label": "Hosted Duals",
+      "url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTmj2TK_XHD27j9weNqii6wHwyCNwcs3_wJ4kguPJtYvHOffRzb7y2l_dTOUppvxUjkLwSCIGWXvH2U/pub?gid=1760665751&single=true&output=csv"
+    }
+  ],
   "registrationUrl": "",
   "tournamentInterestUrl": "",
   "publicResourcesUrl": "",

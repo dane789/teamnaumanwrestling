@@ -95,6 +95,8 @@ window.TNWC = {
   "coaches": [
     {
       "name": "Michael Nauman",
+      "photo": "./coach-mike-illustrated.png",
+      "photoAlt": "Illustrated portrait of Mike Nauman",
       "role": "Head coach",
       "bio": "Head coach focused on technique, discipline and character, drawing on decades of wrestling and coaching."
     },
@@ -107,8 +109,16 @@ window.TNWC = {
     },
     {
       "name": "Tyler Nauman",
+      "photo": "./coach-tyler-illustrated.png",
+      "photoAlt": "Illustrated portrait of Tyler Nauman",
       "role": "Assistant coach",
       "bio": "Competitor and coach sharing technique and competition strategy with the next generation."
+    },
+    {
+      "name": "Tony Griffin",
+      "role": "Coach",
+      "photo": "./coach-tony-illustrated.png",
+      "photoAlt": "Illustrated portrait of Tony Griffin"
     },
     {
       "name": "Brad Bechtel",

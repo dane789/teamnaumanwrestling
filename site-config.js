@@ -18,10 +18,9 @@ window.TNWC = {
       "start": "2026-10-04T09:00:00-04:00",
       "end": "2026-10-04T11:45:00-04:00",
       "location": "500 Penn Street, Middletown, PA 17057",
-      "description": "$25 per wrestler · Limited to 30 wrestlers · Includes 45 minutes of live wrestling. Starts at 9:00 AM; expected finish 11:45 AM, pending club confirmation.",
+      "description": "$25 per wrestler · Limited to 30 wrestlers · Includes 45 minutes of live wrestling. 9:00–11:45 AM ET.",
       "registrationUrl": "https://forms.gle/LYQUBDzCxduMugbh6",
-      "registrationVerified": true,
-      "timeUnconfirmed": true
+      "registrationVerified": true
     },
     {
       "id": "super-six-2026",
@@ -57,7 +56,7 @@ window.TNWC = {
       "allDay": true,
       "dateUnconfirmed": true,
       "location": "Monroeville Convention Center, Monroeville, PA",
-      "description": "Tentative November 14–15, 2026. Dates and division schedule await club confirmation; confirm before making travel plans. $80 per wrestler · All weights requested · Weigh-ins TBD.",
+      "description": "Tentative November 14–15, 2026. Dates and division schedule await club confirmation; confirm before making travel plans. $80 supplied fee; newsletter lists $60 for girls—confirm division fee · All weights requested · Weigh-ins TBD.",
       "registrationUrl": "https://forms.gle/BXn5TsWfNjiA8ERQ6",
       "registrationVerified": true
     },
@@ -80,47 +79,61 @@ window.TNWC = {
   "coaches": [
     {
       "name": "Michael Nauman",
-      "role": "Head coach"
+      "role": "Head coach",
+      "bio": "Head coach focused on technique, discipline and character, drawing on decades of wrestling and coaching."
     },
     {
       "name": "Dan Nauman",
-      "role": "Head coach"
+      "role": "Head coach",
+      "bio": "Experienced head coach helping athletes build fundamentals in a supportive team environment."
     },
     {
       "name": "Tyler Nauman",
-      "role": "Assistant coach"
+      "role": "Assistant coach",
+      "bio": "Competitor and coach sharing technique and competition strategy with the next generation."
     },
     {
       "name": "Brad Bechtel",
-      "role": "Assistant coach · ROOTS"
+      "role": "Assistant coach · ROOTS",
+      "bio": "20+ years coaching at Middletown, Derry Township and LD. Three-time regional/district qualifier; two-time NJCAA qualifier."
     },
     {
       "name": "Logan Stoltzfus",
-      "role": "Youth coach · ROOTS"
+      "role": "Youth coach · ROOTS",
+      "bio": "Lifelong wrestler and youth coach helping children grow as athletes and people. A father of two.",
+      "photo": "./coach-logan.png"
     },
     {
       "name": "Jon Hade",
-      "role": "Assistant coach"
+      "role": "Assistant coach",
+      "bio": "Bishop McDevitt coach with 9+ years’ experience. PIAA runner-up, two-time state medalist and collegiate All-Conference wrestler; strength and conditioning background.",
+      "photo": "./coach-jon.png"
     },
     {
       "name": "Ricky Via",
-      "role": "Assistant coach"
+      "role": "Assistant coach",
+      "bio": "100+ high-school wins at Elizabethtown and Middletown; four-time Academic All-Star. Wrestled Division I at Drexel and Millersville; also coaches at Bishop McDevitt.",
+      "photo": "./coach-ricky.png"
     },
     {
       "name": "Chase Shields",
-      "role": "Assistant coach"
+      "role": "Assistant coach",
+      "bio": "Supports young wrestlers through competitive wrestling knowledge and athlete development."
     },
     {
       "name": "Cole Wilson",
-      "role": "Assistant coach"
+      "role": "Assistant coach",
+      "bio": "Emphasizes technique and mental preparation to help wrestlers compete."
     },
     {
       "name": "Bo Zimmerman",
-      "role": "Assistant coach"
+      "role": "Assistant coach",
+      "bio": "Brings wrestling experience and a commitment to a positive training room."
     },
     {
       "name": "Elijah Flasher",
-      "role": "Assistant coach"
+      "role": "Assistant coach",
+      "bio": "Shares wrestling knowledge with athletes across ages and experience levels."
     }
   ],
   "practices": [
@@ -137,11 +150,18 @@ window.TNWC = {
       "end": "20:15"
     },
     {
+      "day": 1,
+      "program": "Youth programs",
+      "start": "17:30",
+      "end": "18:30",
+      "note": "Shared youth form · coach assigns ROOTS or Saplings session"
+    },
+    {
       "day": 3,
-      "program": "ROOTS",
-      "start": "17:25",
-      "end": "18:40",
-      "note": "Ages 4–10 · seasonal schedule"
+      "program": "Youth programs",
+      "start": "17:30",
+      "end": "18:30",
+      "note": "Shared youth form · coach assigns ROOTS or Saplings session"
     },
     {
       "day": 3,

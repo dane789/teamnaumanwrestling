@@ -128,7 +128,7 @@
   const feeds = c.hostedEventFeeds || (c.miniCampFeedUrl ? [{kind:'Camp',label:'Mini Camps',url:c.miniCampFeedUrl}] : []);
   let feedBusy = false;
   const feedNote = document.createElement('p');
-  feedNote.setAttribute('role','status'); feedNote.hidden = !feeds.length;
+  feedNote.setAttribute('role','status'); feedNote.className='event-feed-note'; feedNote.hidden = !feeds.length;
   $('event-filter').parentElement.insertAdjacentElement('afterend',feedNote);
   if(feeds.length) { c.events=c.events.filter(e=>e.travel || !feeds.some(f=>f.kind===e.kind)); events(); feedNote.textContent='Loading the latest hosted event schedule…'; }
   async function refreshHostedEvents() {
@@ -154,10 +154,12 @@
         if(result.status==='fulfilled') { hostedFeedStates.set(feed.kind,'ready'); c.events.push(...result.value.events); if(result.value.errors.length)warnings.push(feed.label); }
         else { hostedFeedStates.set(feed.kind,'unavailable'); unavailable.push(feed.label); }
       });
-      feedNote.textContent=unavailable.length ? unavailable.join(', ')+' schedule temporarily unavailable. Check with the club before visiting.' : warnings.length ? 'Some '+warnings.join(', ')+' details await confirmation. Contact the club if your event is missing.' : 'Hosted event schedule updated '+new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZone:c.timezone}).format(new Date())+' ET.';
+      feedNote.classList.toggle('needs-attention',Boolean(unavailable.length||warnings.length));
+      feedNote.textContent=unavailable.length ? unavailable.join(', ')+' schedule temporarily unavailable. Check with the club before visiting.' : warnings.length ? 'Some '+warnings.join(', ')+' details await confirmation. Contact the club if your event is missing.' : 'Updated '+new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZone:c.timezone}).format(new Date())+' ET.';
     } catch(error) {
       feeds.forEach(f=>hostedFeedStates.set(f.kind,'unavailable'));
       c.events=c.events.filter(e=>e.travel || !feeds.some(f=>f.kind===e.kind));
+      feedNote.classList.add('needs-attention');
       feedNote.textContent='The hosted event schedule is temporarily unavailable. Please check with the club before visiting.';
     } finally { clearTimeout(timeout); feedBusy=false; events(); featuredEvent(); }
   }

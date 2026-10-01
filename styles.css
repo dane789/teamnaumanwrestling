@@ -73,3 +73,5 @@
 .cancelled-original summary{cursor:pointer;font-weight:700}
 .cancelled-original p{margin:14px 0}
 .event-cancelled .event-actions strong{color:#666;font-weight:500}
+
+.event-feed-note{font-size:.78rem;color:#737373;margin:8px 0 18px;line-height:1.4}.event-feed-note.needs-attention{font-size:1rem;color:#8b2630}

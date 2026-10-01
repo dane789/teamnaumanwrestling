@@ -24,7 +24,7 @@
     if(`${p.year}-${p.month}-${p.day}`!==date || `${p.hour}:${p.minute}`!==time)throw Error('Invalid Eastern time');
     return iso;
   }
-  function read(text,schema,kind='Camp'){
+  function read(text,schema,kind='Camp',travel=false){
     if(!['Camp','Clinic','Tournament'].includes(kind))throw Error('Invalid event type');
     if(schema.type!=='object'||!schema.properties||!schema['x-sheet-columns'])throw Error('Camp schema unavailable');
     const rows=csv(text),columns=schema['x-sheet-columns'];
@@ -61,7 +61,11 @@
         const testOnly=/\bTEST ONLY\b/i.test(obj.title+' '+obj.description);
         const price=Number.isFinite(obj.fee)?` $${obj.fee} per wrestler.`:' Fee: confirm with the club.';
         const capacity=Number.isFinite(obj.capacity)?` Limited to ${obj.capacity} wrestlers.`:'';
-        valid.push({id:obj.id,title:obj.title,kind,start,end,allDay,location:obj.location,fee:obj.fee,capacity:obj.capacity,description:obj.description+price+capacity,registrationUrl:obj.status==='Cancelled'||testOnly?'':obj.registrationUrl,teamRegistrationUrl:obj.status==='Cancelled'||testOnly?'':teamLink,registrationVerified:!!obj.registrationUrl&&!testOnly,cancelled:obj.status==='Cancelled',testOnly,rowNumber});
+        const roster=extra('Roster status');
+        if(travel&&!['Recruiting','Full','Closed'].includes(roster))throw Error('Check roster status');
+        const detail=travel?[extra('Divisions')&&'Divisions: '+extra('Divisions'),extra('Weights needed')&&'Open weights: '+extra('Weights needed'),extra('Weigh-ins')&&'Weigh-ins: '+extra('Weigh-ins'),extra('Signup deadline')&&'Club signup deadline: '+extra('Signup deadline'),...extra('Weekend notes').split(/\r?\n/)].filter(Boolean):undefined;
+        const closed=obj.status==='Cancelled'||testOnly||(travel&&roster!=='Recruiting');
+        valid.push({id:obj.id,title:obj.title,kind,start,end,allDay,location:obj.location,fee:obj.fee,capacity:obj.capacity,description:obj.description+price+capacity,registrationUrl:closed?'':obj.registrationUrl,teamRegistrationUrl:closed?'':teamLink,registrationVerified:!!obj.registrationUrl&&!closed,cancelled:obj.status==='Cancelled',testOnly,rowNumber,...(travel?{travel:true,organizer:extra('Organizer'),organizerUrl:extra('Official link'),travelDetails:detail,rosterStatus:roster}:{} )});
       }catch(error){errors.push({row:rowNumber,message:error.message});}
     });
     const counts=new Map();valid.forEach(e=>counts.set(e.id,(counts.get(e.id)||0)+1));

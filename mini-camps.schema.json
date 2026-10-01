@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Team Nauman public Mini Camp row",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "date", "startTime", "endTime", "location", "fee", "capacity", "description", "registrationUrl", "status"],
+  "properties": {
+    "id": {"type":"string", "minLength":1, "maxLength":250},
+    "title": {"type":"string", "minLength":1, "maxLength":180},
+    "date": {"type":"string", "format":"date", "pattern":"^\\d{4}-\\d{2}-\\d{2}$"},
+    "startTime": {"type":"string", "pattern":"^([01]\\d|2[0-3]):[0-5]\\d$"},
+    "endTime": {"type":"string", "pattern":"^([01]\\d|2[0-3]):[0-5]\\d$"},
+    "location": {"type":"string", "minLength":1, "maxLength":400},
+    "fee": {"type":"number", "minimum":0},
+    "capacity": {"type":"integer", "minimum":1},
+    "description": {"type":"string", "minLength":1, "maxLength":2000},
+    "registrationUrl": {"type":"string", "maxLength":1000, "pattern":"^(|https://(forms\\.gle/|docs\\.google\\.com/forms/)[^\\s]+)$"},
+    "status": {"type":"string", "enum":["Draft", "Published", "Cancelled"]}
+  },
+  "x-timezone": "America/New_York",
+  "x-sheet-columns": {
+    "ID":"id", "Camp":"title", "Date":"date", "Start":"startTime", "End":"endTime", "Location":"location", "Price":"fee", "Capacity":"capacity", "Details":"description", "Signup link":"registrationUrl", "Status":"status"
+  }
+}

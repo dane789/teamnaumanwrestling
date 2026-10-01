@@ -41,7 +41,7 @@
   $('directions').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}`;
   if(c.scheduleApprovedOn) $('schedule-verification').textContent = `Club-confirmed plan · updated ${c.scheduleApprovedOn}`;
   function featuredEvent() {
-  const nextHosted = c.events.filter(e=>!e.travel && Date.parse(e.end)>Date.now()).sort((a,b)=>Date.parse(a.start)-Date.parse(b.start))[0];
+  const nextHosted = c.events.filter(e=>!e.travel && !e.cancelled && !e.testOnly && Date.parse(e.end)>Date.now()).sort((a,b)=>Date.parse(a.start)-Date.parse(b.start))[0];
   const feature = document.querySelector('.practice-feature');
   if(nextHosted) {
     feature.innerHTML = `<span class="section-number">NEXT AT NAUMAN / 01</span><h2 id="practice-feature-title">YOUR NEXT<br>MAT DAY.</h2><p>${escape(nextHosted.title)}</p><div class="feature-row"><strong>${escape(new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeZone:c.timezone}).format(new Date(nextHosted.start)))}</strong><span>${nextHosted.allDay ? 'See division schedule' : escape(new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZone:c.timezone}).format(new Date(nextHosted.start)))+'–'+escape(new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZone:c.timezone}).format(new Date(nextHosted.end)))+' ET'}</span></div><p class="feature-note">${nextHosted.timeUnconfirmed ? 'Confirm the finish time with the club.' : 'Read the event details and confirm availability.'}</p><a class="text-link" href="?eventType=${encodeURIComponent(nextHosted.kind)}#event-list" data-event-kind="${escape(nextHosted.kind)}">Explore the event →</a>`;
@@ -81,10 +81,10 @@
       const date = e.allDay && dateFormat.format(new Date(e.start))!==dateFormat.format(lastDay) ? dateFormat.formatRange(new Date(e.start),lastDay) : dateFormat.format(new Date(e.start));
       const clock = new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZone:c.timezone});
       const timing = new Intl.DateTimeFormat('en-US',{weekday:'long',year:'numeric',timeZone:c.timezone}).format(new Date(e.start)) + (e.allDay ? ' · See division schedule' : ` · ${clock.format(new Date(e.start))}–${clock.format(new Date(e.end))}${e.timeUnconfirmed ? ' (finish to be confirmed)' : ''}`);
-      const open = (c.launchReady || e.registrationVerified) && safeUrl(e.registrationUrl) && (!e.deadline || Date.parse(e.deadline) >= now);
-      return `<article class="event-card ${e.travel ? 'travel-card' : ''}"><div class="event-date">${escape(date)}</div><div><span class="badge">${escape(e.kind)}</span>${e.organizer ? `<p class="tournament-brand ${escape(e.brand)}">${escape(e.organizer)}</p>` : ''}<h3>${escape(e.title)}</h3><p>${escape(timing)} ET · ${escape(e.location)}</p><p>${escape(e.description)}</p>${e.travelDetails ? `<details class="travel-details"><summary>Plan your tournament weekend</summary><ul>${e.travelDetails.map(detail=>`<li>${escape(detail)}</li>`).join('')}</ul><p>Organizer details checked September 30, 2026. Club roster openings are confirmed privately by coaches.</p></details>` : ''}${e.deadline ? `<p>Registration deadline: ${escape(new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short',timeZone:c.timezone}).format(new Date(e.deadline)))} ET</p>` : ''}</div><div class="event-actions">${open ? `<a class="button dark" href="${escape(safeUrl(e.registrationUrl))}" target="_blank" rel="noopener noreferrer">View club signup form ↗</a>` : '<span>Form access not verified</span>'}${e.dateUnconfirmed || e.timeUnconfirmed ? '<span>Confirm timing before adding to your calendar</span>' : `<a class="text-link" href="${escape(eventLink(e))}" target="_blank" rel="noopener noreferrer">Add to my calendar</a>`}${e.location && !/\b(TBD|to be confirmed|pending)\b/i.test(e.location) ? `<a class="text-link" href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent(e.location)}" target="_blank" rel="noopener noreferrer">Get event directions ↗</a>` : ''}${safeUrl(e.organizerUrl) ? `<a class="text-link" href="${escape(safeUrl(e.organizerUrl))}" target="_blank" rel="noopener noreferrer">Official tournament details ↗</a>` : ''}${safeUrl(e.teamRegistrationUrl) ? `<a class="text-link" href="${escape(safeUrl(e.teamRegistrationUrl))}" target="_blank" rel="noopener noreferrer">Team registration form ↗</a>` : ''}</div></article>`;
+      const open = !e.cancelled && (c.launchReady || e.registrationVerified) && safeUrl(e.registrationUrl) && (!e.deadline || Date.parse(e.deadline) >= now);
+      return `<article class="event-card ${e.travel ? 'travel-card' : ''}"><div class="event-date">${escape(date)}</div><div><span class="badge">${escape(e.kind)}${e.testOnly ? " · TEST ONLY" : ""}${e.cancelled ? " · CANCELLED" : ""}</span>${e.organizer ? `<p class="tournament-brand ${escape(e.brand)}">${escape(e.organizer)}</p>` : ''}<h3>${escape(e.title)}</h3><p>${escape(timing)} ET · ${escape(e.location)}</p><p>${escape(e.description)}</p>${e.travelDetails ? `<details class="travel-details"><summary>Plan your tournament weekend</summary><ul>${e.travelDetails.map(detail=>`<li>${escape(detail)}</li>`).join('')}</ul><p>Organizer details checked September 30, 2026. Club roster openings are confirmed privately by coaches.</p></details>` : ''}${e.deadline ? `<p>Registration deadline: ${escape(new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short',timeZone:c.timezone}).format(new Date(e.deadline)))} ET</p>` : ''}</div><div class="event-actions">${open ? `<a class="button dark" href="${escape(safeUrl(e.registrationUrl))}" target="_blank" rel="noopener noreferrer">View club signup form ↗</a>` : e.cancelled ? '<strong>Cancelled — registration closed</strong>' : e.testOnly ? '<span>Website test — no signup</span>' : '<span>Signup link to be confirmed</span>'}${e.cancelled || e.testOnly ? '' : e.dateUnconfirmed || e.timeUnconfirmed ? '<span>Confirm timing before adding to your calendar</span>' : `<a class="text-link" href="${escape(eventLink(e))}" target="_blank" rel="noopener noreferrer">Add to my calendar</a>`}${e.location && !/\b(TBD|to be confirmed|pending)\b/i.test(e.location) ? `<a class="text-link" href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent(e.location)}" target="_blank" rel="noopener noreferrer">Get event directions ↗</a>` : ''}${safeUrl(e.organizerUrl) ? `<a class="text-link" href="${escape(safeUrl(e.organizerUrl))}" target="_blank" rel="noopener noreferrer">Official tournament details ↗</a>` : ''}${safeUrl(e.teamRegistrationUrl) ? `<a class="text-link" href="${escape(safeUrl(e.teamRegistrationUrl))}" target="_blank" rel="noopener noreferrer">Team registration form ↗</a>` : ''}</div></article>`;
     }).join('') : '<div class="empty-state"><span class="empty-mark" aria-hidden="true">/</span><div><h3>No upcoming dates in this category.</h3><p>Try another event filter. Past events appear in the history section below.</p></div></div>';
-    $('event-list').innerHTML = render(list.filter(e=>!e.travel && (kind==='all'||e.kind===kind)));
+    $('event-list').innerHTML = render(list.filter(e=>!e.travel && !e.cancelled && !e.testOnly && (kind==='all'||e.kind===kind)));
     $('travel-event-list').innerHTML = render(list.filter(e=>e.travel));
     const past=c.events.filter(e=>Date.parse(e.end)<now).sort((a,b)=>Date.parse(b.start)-Date.parse(a.start));
     $('recent-event-history').hidden=!past.length;
@@ -108,6 +108,34 @@
   });
   window.addEventListener('popstate',()=>{ $('event-filter').value=selectedEventKind(); events(); });
   events();
+  // Read only the separately published, public Mini Camp Sheet.
+  let campFeedBusy = false;
+  const campFeedNote = document.createElement('p');
+  campFeedNote.setAttribute('role','status'); campFeedNote.hidden = !c.miniCampFeedUrl;
+  $('event-filter').parentElement.insertAdjacentElement('afterend',campFeedNote);
+  if(c.miniCampFeedUrl) { c.events=c.events.filter(e=>e.kind!=='Camp'); events(); campFeedNote.textContent='Loading the latest camp schedule…'; }
+  async function refreshMiniCamps() {
+    if(!c.miniCampFeedUrl || campFeedBusy) return;
+    campFeedBusy = true;
+    const controller = new AbortController(); const timeout = setTimeout(()=>controller.abort(),20000);
+    try {
+      const endpoint = new URL(c.miniCampFeedUrl);
+      if(endpoint.protocol!=='https:' || endpoint.hostname!=='docs.google.com' || !endpoint.pathname.endsWith('/pub') || endpoint.searchParams.get('output')!=='csv') throw Error('Invalid camp feed');
+      endpoint.searchParams.set('_refresh',Date.now());
+      const responses = await Promise.all([
+        fetch(endpoint.href,{cache:'no-store',credentials:'omit',signal:controller.signal}),
+        fetch('./mini-camps.schema.json',{signal:controller.signal})
+      ]);
+      if(responses.some(r=>!r.ok))throw Error('Camp schedule unavailable');
+      const incoming = window.TNWCCampFeed.read(await responses[0].text(),await responses[1].json());
+      c.events = c.events.filter(e=>e.kind!=='Camp').concat(incoming.events);
+      campFeedNote.textContent = incoming.errors.length ? 'Some camp details are awaiting confirmation. Contact the club if your camp is missing.' : 'Camp schedule updated '+new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',timeZone:c.timezone}).format(new Date())+' ET.';
+    } catch(error) {
+      c.events = c.events.filter(e=>e.kind!=='Camp');
+      campFeedNote.textContent = 'The latest camp schedule is temporarily unavailable. Please check with the club before visiting.';
+    } finally { clearTimeout(timeout); campFeedBusy = false; events(); featuredEvent(); }
+  }
+  refreshMiniCamps(); setInterval(refreshMiniCamps,60000);
   // Refresh expiring notices and deadlines while a visitor leaves the page open.
   function announcements() {
     const live = c.announcements.filter(a => Date.parse(a.expires) > Date.now());

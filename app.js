@@ -104,7 +104,7 @@
   }
   function selectedEventKind() {
     const requested=new URLSearchParams(location.search).get('eventType') || 'all';
-    return ['all','Camp','Clinic','Tournament'].includes(requested) ? requested : 'all';
+    return ['all','test','Camp','Clinic','Tournament'].includes(requested) ? requested : 'all';
   }
   $('event-filter').value=selectedEventKind();
   $('event-filter').addEventListener('change',()=>{
@@ -177,3 +177,4 @@
   if(c.testimonials.length) $('testimonial-list').innerHTML = `<div class="testimonial-grid">${c.testimonials.map(t=>`<blockquote><p>“${escape(t.quote)}”</p><footer>${escape(t.attribution)}</footer></blockquote>`).join('')}</div>`;
   else $('stories').hidden = true;
 })();
+

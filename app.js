@@ -58,16 +58,19 @@
   } else feature.innerHTML = '<span class="section-number">AT TEAM NAUMAN / 01</span><h2 id="practice-feature-title">MORE MAT<br>TIME.</h2><p>New camps and duals will appear when announced.</p><a class="text-link" href="#schedule">Find your weekly practice →</a>';
   }
   featuredEvent();
-  let day = 'all';
-  function practices() {
-    const program = $('program-filter').value;
-    const list = c.practices.filter(p => (day === 'all' || p.day === Number(day)) && (program === 'all' || p.program === program)).sort((a,b) => ((a.day + 6) % 7) - ((b.day + 6) % 7) || a.start.localeCompare(b.start));
-    $('practice-list').innerHTML = list.length ? list.map(p => `<article class="practice-row"><span class="day">${days[p.day]}</span><div><h3>${escape(p.program)}</h3><p>500 Penn Street · Middletown, PA 17057${p.note ? '<br>'+escape(p.note) : ''}</p></div><span class="time">${time(p.start)} – ${time(p.end)}</span></article>`).join('') : '<div class="empty-state"><p>No sessions match these filters. Choose another day or program.</p></div>';
+  let practiceWeek=0,practiceData=null;
+  function practices(){
+    if(!practiceData)return;const S=window.TNWCPracticeSchedule,program=$('program-filter').value;
+    const list=S.sessions(practiceData,S.monday(practiceWeek)).filter(p=>p.date>=S.today()&&(program==='all'||p.program===program));
+    $('schedule-week-label').textContent='Week of '+S.label(S.monday(practiceWeek));
+    $('practice-list').innerHTML=list.length?list.map(p=>`<article class="practice-row ${p.status==='Cancelled'?'practice-cancelled':''}"><span class="day">${escape(S.label(p.date))}</span><div><h3>${escape(p.program)}${p.status==='Cancelled'?' <small>Cancelled</small>':''}</h3><p>${escape(p.location)}${p.note?'<br>'+escape(p.note):''}</p></div><div class="practice-row-actions"><span class="time">${S.time(p.start)}${p.end?' to '+S.time(p.end)+' ET':''}</span>${p.status==='Cancelled'?'<span>Attendance closed</span>':`<a class="text-link" href="${escape(S.pageUrl(p))}">Mark your plans →</a>`}</div></article>`).join(''):'<p>No upcoming practices listed for this selection. Try next week or another program.</p>';
   }
-  document.querySelectorAll('[data-day]').forEach(button => button.addEventListener('click', () => { day = button.dataset.day; document.querySelectorAll('[data-day]').forEach(b => b.setAttribute('aria-pressed',String(b === button))); practices(); }));
-  $('program-filter').addEventListener('change',practices); practices();
+  document.querySelectorAll('[data-practice-week]').forEach(button=>button.addEventListener('click',()=>{practiceWeek=Number(button.dataset.practiceWeek);document.querySelectorAll('[data-practice-week]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));practices();}));
+  $('program-filter').addEventListener('change',practices);
+  async function refreshPractices(force=false){try{practiceData=await window.TNWCPracticeSchedule.load(force);practices();$('schedule-verification').textContent='Current practice plan. All times Eastern.';}catch(e){practiceData=null;$('practice-list').innerHTML='<p>The practice schedule is temporarily unavailable. Check with the club before visiting.</p>';}}
+  refreshPractices();setInterval(()=>refreshPractices(true),60000);
   function calendarUrl() { return `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(c.calendarId)}&ctz=${encodeURIComponent(c.timezone)}&mode=AGENDA&showTitle=0`; }
-  if(!c.calendarId) { $('calendar-toggle').hidden=true; $('calendar-subscribe').hidden=true; $('calendar-toggle').parentElement.insertAdjacentHTML('beforeend','<p>For schedule changes and cancellations, check the club newsletter or email the club before visiting.</p>'); }
+  if(!c.calendarId) { $('calendar-toggle').hidden=true; $('calendar-subscribe').hidden=true; $('calendar-toggle').parentElement.insertAdjacentHTML('beforeend','<p>Practice changes appear above. Check with the club if you need confirmation before visiting.</p>'); }
   $('calendar-toggle').addEventListener('click', () => {
     if(!c.calendarId) return pending('The live calendar is not connected yet.', 'The published practice plan is shown above. The club needs to connect its public Google Calendar for live changes and cancellations.');
     const show = $('calendar-panel').hidden;

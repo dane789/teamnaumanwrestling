@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "timezone": "America/New_York",
+  "days": [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ],
+  "programs": [
+    "Youth programs",
+    "All ages"
+  ],
+  "weeklyHeaders": [
+    "Day",
+    "Program",
+    "Start",
+    "End",
+    "Location",
+    "Details",
+    "Status",
+    "Starts",
+    "Ends",
+    "Ready check"
+  ],
+  "changeHeaders": [
+    "Date",
+    "Program",
+    "Start",
+    "End",
+    "Location",
+    "Details",
+    "Status",
+    "Ready check"
+  ],
+  "maxRows": 99
+}

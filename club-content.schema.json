@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "maxRows": 39,
+  "tabs": {
+    "prices": {"gid": "903101010", "headers": ["Category", "Plan", "Wrestlers", "Amount", "Months", "Details", "Starts", "Ends", "Status", "Ready check"]},
+    "programs": {"gid": "903101011", "headers": ["Program", "Ages", "Capacity", "Session details", "Coaches", "Registration link", "Enrollment", "Details", "Ready check"]},
+    "announcements": {"gid": "903101012", "headers": ["Title", "Message", "Starts", "Expires", "Status", "Ready check"]}
+  }
+}

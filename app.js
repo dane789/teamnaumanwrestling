@@ -3,14 +3,6 @@
   const c = window.TNWC;
   let travelState = window.TNWC.travelEventFeed ? 'loading' : 'ready';
   const hostedFeedStates = new Map((c.hostedEventFeeds || (c.miniCampFeedUrl ? [{kind:'Camp'}] : [])).map(f=>[f.kind,'loading']));
-  const tickerButton = document.querySelector('.ticker-toggle');
-  if(tickerButton) tickerButton.addEventListener('click',()=>{
-    const paused=tickerButton.closest('.event-ticker').classList.toggle('is-paused');
-    tickerButton.textContent=paused?'Resume':'Pause';
-    tickerButton.setAttribute('aria-pressed',String(paused));
-    tickerButton.setAttribute('aria-label',paused?'Resume scrolling event banner':'Pause scrolling event banner');
-  });
-
   const $ = id => document.getElementById(id);
   const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const safeUrl = value => { try { const url = new URL(value); return url.protocol === 'https:' ? url.href : ''; } catch { return ''; } };
@@ -61,7 +53,7 @@
   let practiceWeek=0,practiceData=null;
   function practices(){
     if(!practiceData)return;const S=window.TNWCPracticeSchedule,program=$('program-filter').value;
-    const list=S.sessions(practiceData,S.monday(practiceWeek)).filter(p=>p.date>=S.today()&&(program==='all'||p.program===program));
+    const list=S.sessions(practiceData,S.monday(practiceWeek)).filter(p=>p.date>=S.today()&&(p.status==='Cancelled'||Date.parse(window.TNWCCampFeed.eastern(p.date,p.end,c.timezone))>Date.now())&&(program==='all'||p.program===program));
     $('schedule-week-label').textContent='Week of '+S.label(S.monday(practiceWeek));
     $('practice-list').innerHTML=list.length?list.map(p=>`<article class="practice-row ${p.status==='Cancelled'?'practice-cancelled':''}"><span class="day">${escape(S.label(p.date))}</span><div><h3>${escape(p.program)}${p.status==='Cancelled'?' <small>Cancelled</small>':''}</h3><p>${escape(p.location)}${p.note?'<br>'+escape(p.note):''}</p></div><div class="practice-row-actions"><span class="time">${S.time(p.start)}${p.end?' to '+S.time(p.end)+' ET':''}</span>${p.status==='Cancelled'?'<span>Attendance closed</span>':`<a class="text-link" href="${escape(S.pageUrl(p))}">Mark your plans →</a>`}</div></article>`).join(''):'<p>No upcoming practices listed for this selection. Try next week or another program.</p>';
   }
@@ -181,12 +173,7 @@
   }
   refreshTravel();setInterval(refreshTravel,60000);
   // Refresh expiring notices and deadlines while a visitor leaves the page open.
-  function announcements() {
-    const live = c.announcements.filter(a => Date.parse(a.expires) > Date.now());
-    $('announcements').hidden = !live.length;
-    $('announcements').innerHTML = live.map(a=>`<p>${escape(a.text)}</p>`).join('');
-  }
-  announcements(); setInterval(() => { events(); featuredEvent(); announcements(); },60000);
+  setInterval(() => { events(); featuredEvent(); },60000);
   if(c.testimonials.length) $('testimonial-list').innerHTML = `<div class="testimonial-grid">${c.testimonials.map(t=>`<blockquote><p>“${escape(t.quote)}”</p><footer>${escape(t.attribution)}</footer></blockquote>`).join('')}</div>`;
   else $('stories').hidden = true;
 })();

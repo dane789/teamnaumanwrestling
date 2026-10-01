@@ -1,6 +1,14 @@
 (() => {
   'use strict';
   const c = window.TNWC;
+  const tickerButton = document.querySelector('.ticker-toggle');
+  if(tickerButton) tickerButton.addEventListener('click',()=>{
+    const paused=tickerButton.closest('.event-ticker').classList.toggle('is-paused');
+    tickerButton.textContent=paused?'Resume':'Pause';
+    tickerButton.setAttribute('aria-pressed',String(paused));
+    tickerButton.setAttribute('aria-label',paused?'Resume scrolling event banner':'Pause scrolling event banner');
+  });
+
   const $ = id => document.getElementById(id);
   const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const safeUrl = value => { try { const url = new URL(value); return url.protocol === 'https:' ? url.href : ''; } catch { return ''; } };

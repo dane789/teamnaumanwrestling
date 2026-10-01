@@ -11,7 +11,7 @@ function partnerDetails(p){
 }
 function choose(p,scroll=true){
  if(!upcoming(p))return;
- selected=p;const section=document.getElementById('attendance-form');section.hidden=false;
+ selected=p;if(window.matchMedia('(max-width:800px)').matches)document.getElementById('session-picker').open=false;const section=document.getElementById('attendance-form');section.hidden=false;
  document.getElementById('selected-practice').innerHTML=`<p class="eyebrow">${esc(S.label(p.date))}</p><h2>${esc(p.program)}</h2><p><strong>${S.time(p.start)} to ${S.time(p.end)} ET</strong><br>${esc(p.location)}</p><a class="text-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.location)}" target="_blank" rel="noopener">Directions ↗</a>${p.note?'<p>'+esc(p.note)+'</p>':''}`;
  document.getElementById('selected-partners').innerHTML=partnerDetails(p);
  board.querySelectorAll('[data-session-date]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sessionDate===p.date&&b.dataset.sessionProgram===p.program)));
@@ -27,7 +27,7 @@ function render(){
  board.querySelectorAll('[data-session-date]').forEach(b=>b.addEventListener('click',()=>choose(sessions.find(p=>p.date===b.dataset.sessionDate&&p.program===b.dataset.sessionProgram))));
  if(selected){const current=S.sessions(data,S.monday(),14).find(p=>p.date===selected.date&&p.program===selected.program);if(!current||!upcoming(current)||current.start!==selected.start||current.end!==selected.end||current.location!==selected.location){document.getElementById('attendance-form').hidden=true;selected=null;document.getElementById('board-status').textContent='Your selected practice has changed. Choose a current session before submitting.';}else choose(current,false);}
 }
-document.querySelectorAll('[data-week]').forEach(b=>b.addEventListener('click',()=>{week=Number(b.dataset.week);document.querySelectorAll('[data-week]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));selected=null;document.getElementById('attendance-form').hidden=true;if(ready)render();}));
+document.querySelectorAll('[data-week]').forEach(b=>b.addEventListener('click',()=>{week=Number(b.dataset.week);document.getElementById('session-picker').open=true;document.querySelectorAll('[data-week]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));selected=null;document.getElementById('attendance-form').hidden=true;if(ready)render();}));
 document.getElementById('planner-program').addEventListener('change',()=>{if(ready)render();});
 async function refresh(force=false){
  try{
@@ -59,3 +59,4 @@ document.getElementById('practice-rsvp').addEventListener('submit',e=>{
 });
 refresh();setInterval(()=>refresh(true),60000);
 })();
+

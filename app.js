@@ -27,7 +27,7 @@
     const key = button.dataset.service;
     const url = safeUrl(c[key]);
     if (url && c.launchReady) window.open(url, '_blank', 'noopener,noreferrer');
-    else if (key === 'privateTrainingUrl' && c.launchReady && c.contactEmail) contact();
+    else if (key === 'privateTrainingUrl' && c.contactEmail) contact();
     else pending(...services[key]);
   }));
   $('contact-button').addEventListener('click', contact);
@@ -36,7 +36,6 @@
   const menu = document.querySelector('.menu-toggle');
   menu.addEventListener('click', () => { const open = menu.getAttribute('aria-expanded') !== 'true'; menu.setAttribute('aria-expanded', String(open)); $('navigation').classList.toggle('open', open); });
   $('navigation').querySelectorAll('a').forEach(link => link.addEventListener('click', () => { menu.setAttribute('aria-expanded','false'); $('navigation').classList.remove('open'); }));
-  if(c.launchReady) $('draft-banner').hidden = true;
   $('year').textContent = new Intl.DateTimeFormat('en-US',{year:'numeric',timeZone:c.timezone}).format(new Date());
   $('address').textContent = c.address;
   $('directions').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}`;
@@ -55,6 +54,7 @@
   document.querySelectorAll('[data-day]').forEach(button => button.addEventListener('click', () => { day = button.dataset.day; document.querySelectorAll('[data-day]').forEach(b => b.setAttribute('aria-pressed',String(b === button))); practices(); }));
   $('program-filter').addEventListener('change',practices); practices();
   function calendarUrl() { return `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(c.calendarId)}&ctz=${encodeURIComponent(c.timezone)}&mode=AGENDA&showTitle=0`; }
+  if(!c.calendarId) { $('calendar-toggle').hidden=true; $('calendar-subscribe').hidden=true; $('calendar-toggle').parentElement.insertAdjacentHTML('beforeend','<p>For schedule changes and cancellations, check the club newsletter or email the club before visiting.</p>'); }
   $('calendar-toggle').addEventListener('click', () => {
     if(!c.calendarId) return pending('The live calendar is not connected yet.', 'The published practice plan is shown above. The club needs to connect its public Google Calendar for live changes and cancellations.');
     const show = $('calendar-panel').hidden;
@@ -90,6 +90,5 @@
   }
   announcements(); setInterval(() => { events(); announcements(); },60000);
   if(c.testimonials.length) $('testimonial-list').innerHTML = `<div class="testimonial-grid">${c.testimonials.map(t=>`<blockquote><p>“${escape(t.quote)}”</p><footer>${escape(t.attribution)}</footer></blockquote>`).join('')}</div>`;
-  else if(!c.launchReady) $('testimonial-list').innerHTML = '<div class="story-empty"><p>Parent and athlete stories will appear here with their permission. Approved testimonials are still being gathered for this preview.</p></div>';
   else $('stories').hidden = true;
 })();

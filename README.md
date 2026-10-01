@@ -2,11 +2,11 @@
 
 Owner-review draft: https://dane789.github.io/teamnaumanwrestling/
 
-This is a proposed replacement for the Middletown club website. It is a draft for review, with registration services disabled and search-engine indexing discouraged.
+This is a proposed replacement for the Middletown club website. It is an event-focused draft for review, with selected links to existing public club Google Forms and search-engine indexing discouraged. Forms operate outside this site; coaches confirm places and fees.
 
 ## Included
 
-- Practice schedule filters, programs, coach directory, event listings, tournament-team request paths, testimonial support, directions, and club email contact.
+- Hosted camps and signature duals, separate travel-tournament listings, youth programs, practice filters, coaches, directions, and club email contact. Past events are archived; uncertain dates are labeled and have no calendar export.
 - Public Google Calendar and Forms connection settings, ready for the club's approved accounts and links.
 - Responsive layout and accessible navigation.
 

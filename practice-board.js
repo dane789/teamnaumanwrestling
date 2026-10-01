@@ -16,7 +16,7 @@
     const cards=[];
     for(let n=0;n<7;n++){
       const d=new Date(anchor);d.setUTCDate(d.getUTCDate()+n);const key=d.toISOString().slice(0,10);
-      for(const p of cfg.practices.filter(p=>p.day===d.getUTCDay())){
+      for(const p of cfg.practices.filter(p=>p.day===d.getUTCDay()).sort((a,b)=>a.start.localeCompare(b.start))){
         const rows=totals.filter(r=>r.Date===key&&r.Program===p.program), come=Number(rows.find(r=>r.Attendance==='Coming')?.Count||0),maybe=Number(rows.find(r=>r.Attendance==='Maybe')?.Count||0);
         const visible=groups.filter(r=>r.Date===key&&r.Program===p.program&&Number(r.Count)>=3);
         const time=s=>{const [h,m]=s.split(':').map(Number);return `${h%12||12}:${String(m).padStart(2,'0')} ${h<12?'AM':'PM'}`;};

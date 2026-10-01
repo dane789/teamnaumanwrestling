@@ -52,7 +52,7 @@
   function practices() {
     const program = $('program-filter').value;
     const list = c.practices.filter(p => (day === 'all' || p.day === Number(day)) && (program === 'all' || p.program === program)).sort((a,b) => ((a.day + 6) % 7) - ((b.day + 6) % 7) || a.start.localeCompare(b.start));
-    $('practice-list').innerHTML = list.length ? list.map(p => `<article class="practice-row"><span class="day">${days[p.day]}</span><div><h3>${escape(p.program)}</h3><p>${escape(p.note || '500 Penn Street · Middletown')}</p></div><span class="time">${time(p.start)} – ${time(p.end)}</span></article>`).join('') : '<div class="empty-state"><p>No sessions match these filters. Choose another day or program.</p></div>';
+    $('practice-list').innerHTML = list.length ? list.map(p => `<article class="practice-row"><span class="day">${days[p.day]}</span><div><h3>${escape(p.program)}</h3><p>500 Penn Street · Middletown, PA 17057${p.note ? '<br>'+escape(p.note) : ''}</p></div><span class="time">${time(p.start)} – ${time(p.end)}</span></article>`).join('') : '<div class="empty-state"><p>No sessions match these filters. Choose another day or program.</p></div>';
   }
   document.querySelectorAll('[data-day]').forEach(button => button.addEventListener('click', () => { day = button.dataset.day; document.querySelectorAll('[data-day]').forEach(b => b.setAttribute('aria-pressed',String(b === button))); practices(); }));
   $('program-filter').addEventListener('change',practices); practices();

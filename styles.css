@@ -65,3 +65,17 @@
 .event-ticker:hover .event-ticker-track,.event-ticker:focus-within .event-ticker-track,.event-ticker.is-paused .event-ticker-track{animation-play-state:paused}
 @keyframes tnwc-event-scroll{to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.event-ticker-track{display:block;animation:none;width:auto}.event-ticker-group{width:100%;min-width:0;flex-wrap:wrap;justify-content:flex-start;gap:12px 20px;padding:0}.event-ticker-group[aria-hidden]{display:none}.ticker-toggle{display:none}.event-ticker-window{overflow:visible}}
+
+.event-card.event-cancelled{border:2px solid #ae1722;background:#fff4f4;gap:20px}
+.cancellation-banner{grid-column:1/-1;display:flex;align-items:center;gap:18px;background:#ae1722;color:#fff;padding:14px 18px;line-height:1.4}
+.cancellation-banner strong{font-size:1.15rem;letter-spacing:.06em}
+.cancellation-banner span{font-weight:700}
+.event-cancelled .event-date{color:#77101a}
+.event-cancelled .event-date small{display:block;font-size:.8rem;font-weight:400;margin-bottom:8px}
+.event-cancelled h3{color:#77101a}
+.event-cancelled .cancellation-message{color:#3f1519;font-size:1rem;font-weight:600}
+.cancelled-original{margin-top:16px;color:#494949}
+.cancelled-original summary{cursor:pointer;font-weight:700}
+.cancelled-original p{margin:14px 0}
+.event-cancelled .event-actions strong{color:#77101a}
+@media(max-width:650px){.cancellation-banner{flex-direction:column;align-items:flex-start;gap:4px}}

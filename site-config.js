@@ -47,30 +47,46 @@ window.TNWC = {
       "registrationVerified": true
     },
     {
-      "id": "west-penn-tentative-2026",
+      "id": "west-penn-2026",
       "travel": true,
-      "title": "West Penn Duals · Dates to be confirmed",
+      "title": "West Penn Duals",
       "kind": "Tournament",
       "start": "2026-11-14T00:00:00-05:00",
       "end": "2026-11-16T00:00:00-05:00",
       "allDay": true,
-      "dateUnconfirmed": true,
-      "location": "Monroeville Convention Center, Monroeville, PA",
-      "description": "Tentative November 14–15, 2026. Dates and division schedule await club confirmation; confirm before making travel plans. $80 supplied fee; newsletter lists $60 for girls—confirm division fee · All weights requested · Weigh-ins TBD.",
+      "organizer": "BREAK THE CHAINS WRESTLING",
+      "brand": "west-penn",
+      "location": "Monroeville Convention Center, 209 Mall Boulevard, Monroeville, PA",
+      "description": "Bring your training to a national team-dual event in western Pennsylvania. The organizer offers folkstyle divisions from elementary through high school; Team Nauman coaches confirm which teams and weights the club will field.",
+      "travelDetails": [
+        "Competition: November 14–15. K–4, K–6, K–8 and high school wrestle both days; girls high school Saturday only, girls K–8 Sunday only.",
+        "Arrival: doors 7 AM; wrestling 8:30 AM both days. Regular weigh-ins Friday 6–7:30 PM or Saturday 7–7:30 AM; girls K–8 also have separate options. Check your assigned division.",
+        "Club fee: supplied $80; newsletter lists $60 for girls. Confirm your division fee with Dan before paying. Spectator admission is separate.",
+        "Planning: organizer offers hotel booking links. Its November 6 team balance/roster deadline is for coaches; Dan sets each family’s deadline."
+      ],
+      "organizerUrl": "https://www.breakthechainswrestling.com/west-penn-duals",
       "registrationUrl": "https://forms.gle/BXn5TsWfNjiA8ERQ6",
       "registrationVerified": true
     },
     {
-      "id": "vac-tentative-2026",
+      "id": "vac-2026",
       "travel": true,
-      "title": "VAC · MS & K–6 teams · Dates to be confirmed",
+      "title": "VACW National Holiday Duals",
       "kind": "Tournament",
       "start": "2026-12-10T00:00:00-05:00",
       "end": "2026-12-13T00:00:00-05:00",
       "allDay": true,
-      "dateUnconfirmed": true,
-      "location": "VA Beach Sports Center, Virginia Beach, VA",
-      "description": "Supplied dates: December 10–12, 2026. Dates await club confirmation; confirm before making travel plans. Form lists $100 per wrestler, youth and middle-school weight classes, and a USA Wrestling card requirement. Sign-in is required to complete the form; availability is not verified.",
+      "organizer": "VIRGINIA CHALLENGE WRESTLING",
+      "brand": "vacw",
+      "location": "Virginia Beach Sports Center, Virginia Beach, VA",
+      "description": "A national dual-meet experience for Team Nauman’s elementary and middle-school wrestlers. Compete together, support your teammates and put your work in the room to the test against teams from beyond Pennsylvania.",
+      "travelDetails": [
+        "Competition: December 11–12, 2026, starting at 9 AM both days. December 10 is arrival, check-in and weigh-in day.",
+        "Check-in: general weigh-ins December 10, 6–7:30 PM. Early 1–2:30 PM weigh-ins require the team’s qualifying hotel bookings; wait for coach instructions.",
+        "Club signup: Form lists $100 per wrestler and a USA Wrestling card requirement. Confirm eligibility, fee and acceptance with Dan; the Form requires Google sign-in.",
+        "Travel: confirm your lineup place, assigned weigh-in and team hotel arrangements before booking. Organizer rules and schedules may change."
+      ],
+      "organizerUrl": "https://www.virginiachallenge.org/page/show/4080455-holiday-duals",
       "registrationUrl": "https://forms.gle/DGakfm7NKoMhq3EX9"
     }
   ],
@@ -85,6 +101,8 @@ window.TNWC = {
     {
       "name": "Dan Nauman",
       "role": "Head coach",
+      "photo": "./dan-review-portrait.png",
+      "photoAlt": "Illustrated portrait of Dan Nauman",
       "bio": "Experienced head coach helping athletes build fundamentals in a supportive team environment."
     },
     {
@@ -94,12 +112,12 @@ window.TNWC = {
     },
     {
       "name": "Brad Bechtel",
-      "role": "Assistant coach · ROOTS",
+      "role": "Assistant coach · Roots",
       "bio": "20+ years coaching at Middletown, Derry Township and LD. Three-time regional/district qualifier; two-time NJCAA qualifier."
     },
     {
       "name": "Logan Stoltzfus",
-      "role": "Youth coach · ROOTS",
+      "role": "Youth coach · Roots",
       "bio": "Lifelong wrestler and youth coach helping children grow as athletes and people. A father of two.",
       "photo": "./coach-logan.png"
     },
@@ -154,14 +172,14 @@ window.TNWC = {
       "program": "Youth programs",
       "start": "17:30",
       "end": "18:30",
-      "note": "Shared youth form · coach assigns ROOTS or Saplings session"
+      "note": "Shared youth form · coach assigns Roots or Saplings session"
     },
     {
       "day": 3,
       "program": "Youth programs",
       "start": "17:30",
       "end": "18:30",
-      "note": "Shared youth form · coach assigns ROOTS or Saplings session"
+      "note": "Shared youth form · coach assigns Roots or Saplings session"
     },
     {
       "day": 3,

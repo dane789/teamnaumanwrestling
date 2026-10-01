@@ -18,7 +18,7 @@ window.TNWC = {
       "start": "2026-10-04T09:00:00-04:00",
       "end": "2026-10-04T11:45:00-04:00",
       "location": "500 Penn Street, Middletown, PA 17057",
-      "description": "$25 per wrestler · Limited to 30 wrestlers · Includes 45 minutes of live wrestling. The form says 11:45 PM; 11:45 AM is the likely finish and must be confirmed with the club.",
+      "description": "$25 per wrestler · Limited to 30 wrestlers · Includes 45 minutes of live wrestling. Starts at 9:00 AM; expected finish 11:45 AM, pending club confirmation.",
       "registrationUrl": "https://forms.gle/LYQUBDzCxduMugbh6",
       "registrationVerified": true,
       "timeUnconfirmed": true
@@ -43,7 +43,7 @@ window.TNWC = {
       "start": "2026-10-12T10:00:00-04:00",
       "end": "2026-10-12T12:45:00-04:00",
       "location": "500 Penn Street, Middletown, PA 17057",
-      "description": "$25 per wrestler · Limited to 30 wrestlers · Includes 45 minutes of live wrestling. The supplied September 27 link now displays this October 12 clinic.",
+      "description": "$25 per wrestler · Limited to 30 wrestlers · Includes 45 minutes of live wrestling. 10:00 AM–12:45 PM ET.",
       "registrationUrl": "https://forms.gle/zgdRPtDkqyFBD4zd6",
       "registrationVerified": true
     },
@@ -57,7 +57,7 @@ window.TNWC = {
       "allDay": true,
       "dateUnconfirmed": true,
       "location": "Monroeville Convention Center, Monroeville, PA",
-      "description": "Tentative November 14–15, 2026. Form title says 2026, while its description says 2025 and some division dates differ. Confirm the dates and division before making travel plans. $80 per wrestler · All weights requested · Weigh-ins TBD.",
+      "description": "Tentative November 14–15, 2026. Dates and division schedule await club confirmation; confirm before making travel plans. $80 per wrestler · All weights requested · Weigh-ins TBD.",
       "registrationUrl": "https://forms.gle/BXn5TsWfNjiA8ERQ6",
       "registrationVerified": true
     },
@@ -71,7 +71,7 @@ window.TNWC = {
       "allDay": true,
       "dateUnconfirmed": true,
       "location": "VA Beach Sports Center, Virginia Beach, VA",
-      "description": "Supplied dates: December 10–12, 2026. Form title still says 2025 VAC; confirm current event details. Form lists $100 per wrestler, youth and middle-school weight classes, and a USA Wrestling card requirement. Sign-in is required to complete the form; availability is not verified.",
+      "description": "Supplied dates: December 10–12, 2026. Dates await club confirmation; confirm before making travel plans. Form lists $100 per wrestler, youth and middle-school weight classes, and a USA Wrestling card requirement. Sign-in is required to complete the form; availability is not verified.",
       "registrationUrl": "https://forms.gle/DGakfm7NKoMhq3EX9"
     }
   ],

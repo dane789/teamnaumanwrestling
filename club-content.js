@@ -31,7 +31,7 @@ function parse(text,kind,schema,today){
 const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:Number.isInteger(n)?0:2}).format(n);
 function value(p,prices){const monthly=prices.find(x=>x.Category==='Individual'&&x.wrestlers===1&&x.months===1);if(p.months<=1||!monthly)return esc(p.Details);const saving=monthly.amount*p.months-p.amount;return `About ${money(Math.round(p.amount/p.months))}/month${saving>0?' · save '+money(saving)+' versus '+p.months+' monthly payments':''}`;}
 function renderPrices(prices){
- const box=document.getElementById('live-prices');
+ const box=document.getElementById('live-prices');if(!box)return;
  const individual=prices.filter(p=>p.Category==='Individual'),family=prices.filter(p=>p.Category==='Family'),youth=prices.filter(p=>p.Category==='Youth');
  const table=(caption,head,rows)=>`<table><caption>${caption}</caption><thead><tr>${head.map(h=>'<th scope="col">'+h+'</th>').join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`;
  const familyPlans=[...new Set(family.map(p=>p.Plan))],sizes=[...new Set(family.map(p=>p.wrestlers))].sort((a,b)=>a-b);
@@ -43,21 +43,21 @@ function renderPrices(prices){
 }
 function renderPrograms(programs){
  for(const name of ['Roots','Saplings']){
-  const card=document.querySelector('[data-live-program="'+name+'"]'),a=programs.find(p=>p.Program===name);card.hidden=!a;if(!a)continue;
+  const card=document.querySelector('[data-live-program="'+name+'"]'),a=programs.find(p=>p.Program===name);if(!card)continue;card.hidden=!a;if(!a)continue;
   card.querySelector('.badge').textContent='AGES '+a.Ages;
   card.querySelector('[data-program-info]').textContent=`Ages ${a.Ages} · Up to ${a.Capacity} wrestlers · ${a['Session details']}`;
   card.querySelector('[data-program-coaches]').textContent=a.Coaches;
   const target=card.querySelector('[data-program-enrollment]'),link=a['Registration link'];
   target.innerHTML=`<p>${esc(a.Details)}</p><p><strong>${esc(a.Enrollment)}</strong></p>${link&&!['Full','Closed'].includes(a.Enrollment)?'<a class="text-link" href="'+esc(link)+'" target="_blank" rel="noopener noreferrer">'+esc(name)+' registration form ↗</a>':'<p>Contact the club about the next opening.</p>'}`;
- }document.getElementById('program-content-status').textContent='';
+ }if(document.getElementById('program-content-status'))document.getElementById('program-content-status').textContent='';
 }
-function renderAnnouncements(items){const box=document.getElementById('announcements');box.hidden=!items.length;box.innerHTML=items.map(a=>'<p><strong>'+esc(a.Title)+'</strong> '+esc(a.Message)+'</p>').join('');}
+function renderAnnouncements(items){const box=document.getElementById('announcements');box.hidden=!items.length;box.innerHTML='<h2>This week at TNWC</h2>'+items.map(a=>'<p><strong>'+esc(a.Title)+'</strong> '+esc(a.Message)+'</p>').join('');}
 if(typeof module==='object'&&module.exports){module.exports={parse,dateOK,value};return;}
 async function refresh(){
  const schema=await fetch('./club-content.schema.json').then(r=>{if(!r.ok)throw Error();return r.json();});
  await Promise.allSettled(Object.entries(schema.tabs).map(async([kind,tab])=>{
   try{const u=new URL(root.TNWC.practiceBoardFeed);u.searchParams.set('gid',tab.gid);u.searchParams.set('single','true');u.searchParams.set('_refresh',Date.now());const r=await fetch(u,{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(20000)});if(!r.ok)throw Error();const items=parse(await r.text(),kind,schema,root.TNWCPracticeSchedule.today());if(kind==='prices')renderPrices(items);else if(kind==='programs')renderPrograms(items);else renderAnnouncements(items);}
-  catch{if(kind==='prices')document.getElementById('live-prices').innerHTML='<p>Current prices are temporarily unavailable. Please ask the club before paying.</p>';else if(kind==='programs'){document.querySelectorAll('[data-live-program]').forEach(c=>{c.querySelector('[data-program-info]').textContent='Ask the club for current ages, session details and availability.';c.querySelector('[data-program-coaches]').textContent='';c.querySelector('[data-program-enrollment]').innerHTML='<p>Enrollment details are temporarily unavailable. Contact the club before registering.</p>';c.querySelector('.badge').textContent='YOUTH PROGRAM';});document.getElementById('program-content-status').textContent='Current program details could not be loaded.';}else renderAnnouncements([]);}
+  catch{if(kind==='prices')if(document.getElementById('live-prices'))document.getElementById('live-prices').innerHTML='<p>Current prices are temporarily unavailable. Please ask the club before paying.</p>';else if(kind==='programs'){document.querySelectorAll('[data-live-program]').forEach(c=>{c.querySelector('[data-program-info]').textContent='Ask the club for current ages, session details and availability.';c.querySelector('[data-program-coaches]').textContent='';c.querySelector('[data-program-enrollment]').innerHTML='<p>Enrollment details are temporarily unavailable. Contact the club before registering.</p>';c.querySelector('.badge').textContent='YOUTH PROGRAM';});if(document.getElementById('program-content-status'))document.getElementById('program-content-status').textContent='Current program details could not be loaded.';}else renderAnnouncements([]);}
  }));
 }
 refresh().catch(()=>{document.getElementById('live-prices').textContent='Ask the club for current prices.';document.getElementById('program-content-status').textContent='Ask the club for current enrollment details.';});setInterval(()=>refresh().catch(()=>{}),60000);

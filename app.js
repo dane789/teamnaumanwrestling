@@ -50,16 +50,19 @@
   } else feature.innerHTML = '<span class="section-number">AT TEAM NAUMAN / 01</span><h2 id="practice-feature-title">MORE MAT<br>TIME.</h2><p>New camps and duals will appear when announced.</p><a class="text-link" href="#schedule">Find your weekly practice →</a>';
   }
   featuredEvent();
-  let practiceWeek=0,practiceData=null;
+  let practiceData=null;
   function practices(){
-    if(!practiceData)return;const S=window.TNWCPracticeSchedule,program=$('program-filter').value;
-    const list=S.sessions(practiceData,S.monday(practiceWeek)).filter(p=>p.date>=S.today()&&(p.status==='Cancelled'||Date.parse(window.TNWCCampFeed.eastern(p.date,p.start,c.timezone))>Date.now())&&(program==='all'||p.program===program));
-    $('schedule-week-label').textContent='Week of '+S.label(S.monday(practiceWeek));
-    $('practice-list').innerHTML=list.length?list.map(p=>`<article class="practice-row ${p.status==='Cancelled'?'practice-cancelled':''}"><span class="day">${escape(S.label(p.date))}</span><div><h3>${escape(p.program)}${p.status==='Cancelled'?' <small>Cancelled</small>':''}</h3><p>${escape(p.location)}${p.note?'<br>'+escape(p.note):''}</p></div><div class="practice-row-actions"><span class="time">${S.time(p.start)}${p.end?' to '+S.time(p.end)+' ET':''}</span>${p.status==='Cancelled'?'<span>Attendance closed</span>':`<a class="text-link" href="${escape(S.pageUrl(p))}">Mark your plans →</a>`}</div></article>`).join(''):'<p>No upcoming practices listed for this selection. Try next week or another program.</p>';
+    if(!practiceData)return;
+    const S=window.TNWCPracticeSchedule,program=$('program-filter').value,today=S.today(),days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const weekly=practiceData.weekly.filter(p=>(!p.from||today>=p.from)&&(!p.through||today<=p.through)&&(program==='all'||p.program===program)).sort((a,b)=>((a.day+6)%7)-((b.day+6)%7)||a.start.localeCompare(b.start));
+    $('practice-list').innerHTML=weekly.length?weekly.map(p=>`<article class="practice-row"><span class="day">${escape(days[p.day])}</span><div><h3>${escape(p.program)}</h3><p>${escape(p.location)}${p.note?'<br>'+escape(p.note):''}</p></div><span class="time">${S.time(p.start)} to ${S.time(p.end)}</span></article>`).join(''):'<p>No regular practices are listed for this program. Ask the club about the current season.</p>';
+    const through=new Date(today+'T12:00:00Z');through.setUTCDate(through.getUTCDate()+14);
+    const changes=practiceData.changes.filter(p=>p.date>=today&&p.date<=through.toISOString().slice(0,10)&&(program==='all'||p.program===program)).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
+    $('practice-changes').hidden=!changes.length;
+    $('practice-change-list').innerHTML=changes.map(p=>`<article class="practice-change"><strong>${escape(S.label(p.date))} · ${escape(p.program)}</strong><p>${p.status==='Cancelled'?'No practice on this date.':S.time(p.start)+' to '+S.time(p.end)+' · '+escape(p.location)}${p.note?'<br>'+escape(p.note):''}</p></article>`).join('');
   }
-  document.querySelectorAll('[data-practice-week]').forEach(button=>button.addEventListener('click',()=>{practiceWeek=Number(button.dataset.practiceWeek);document.querySelectorAll('[data-practice-week]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));practices();}));
   $('program-filter').addEventListener('change',practices);
-  async function refreshPractices(force=false){try{practiceData=await window.TNWCPracticeSchedule.load(force);practices();$('schedule-verification').textContent='';}catch(e){practiceData=null;$('practice-list').innerHTML='<p>The practice schedule is temporarily unavailable. Check with the club before visiting.</p>';}}
+  async function refreshPractices(force=false){try{practiceData=await window.TNWCPracticeSchedule.load(force);practices();$('schedule-verification').textContent='';}catch(e){practiceData=null;$('practice-changes').hidden=true;$('practice-change-list').innerHTML='';$('practice-list').innerHTML='<p>The practice schedule is temporarily unavailable. Check with the club before visiting.</p>';}}
   refreshPractices();setInterval(()=>refreshPractices(true),60000);
   function calendarUrl() { return `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(c.calendarId)}&ctz=${encodeURIComponent(c.timezone)}&mode=AGENDA&showTitle=0`; }
   if(!c.calendarId) { $('calendar-toggle').hidden=true; $('calendar-subscribe').hidden=true; $('calendar-toggle').parentElement.insertAdjacentHTML('beforeend','<p>Practice changes appear above. Check with the club if you need confirmation before visiting.</p>'); }

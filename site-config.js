@@ -1,5 +1,4 @@
 window.TNWC = {
-  "attendanceSubmitUrl": "https://script.google.com/macros/s/AKfycbw-5i7uXFxlx9R4yikcuOSH3GLTUNHQhOQjR1iF_VMZbPeFqCrOWGW-_VPlzkcq2RDotw/exec",
   "launchReady": false,
   "contactEmail": "teamnaumanwrestlingclub@gmail.com",
   "contactPhone": "",

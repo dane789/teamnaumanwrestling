@@ -102,3 +102,5 @@
 .travel-facts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}.travel-facts div{padding:12px;background:#f0f0f0}.travel-facts dt{font-size:.8rem;font-weight:700;color:#555}.travel-facts dd{margin:4px 0 0;font-size:1rem;line-height:1.5}@media(max-width:650px){.travel-facts{grid-template-columns:1fr;gap:8px}}
 
 .detail-page-title{font-size:clamp(2rem,3.6vw,3.5rem);letter-spacing:-.055em;line-height:1.07;margin-bottom:24px}
+
+.practice-feature h2{text-transform:uppercase}@media(max-width:700px){.practice-feature h2{font-size:28px;line-height:1.2;letter-spacing:-.025em;text-transform:none;max-width:100%;margin-bottom:16px}}

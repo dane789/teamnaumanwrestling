@@ -1,15 +1,20 @@
 (() => {
  'use strict';
  const c=window.TNWC,esc=v=>String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
- const eventId=new URLSearchParams(location.search).get('event')||'test-team-duals';
+ const requestedEvent=new URLSearchParams(location.search).get('event');
+ const eventId=!requestedEvent||requestedEvent==='test-team-duals'?'travel-20261114-west-penn-duals':requestedEvent;
  const endpoint=c.teamBuilderServiceUrl||'',grid=document.getElementById('team-board'),message=document.getElementById('team-status'),dialog=document.getElementById('team-request-dialog');
- let current=null,busy=false;
+ let current=null,busy=false,selectedDivision='';
  function render(board){
   current=board;document.getElementById('team-title').textContent=board.event.title;
   const niceDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')?new Date(v+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):v;
-  document.getElementById('team-details').textContent=[niceDate(board.event.date),board.event.endDate!==board.event.date?niceDate(board.event.endDate):'',board.event.testOnly?'':board.event.location].filter(Boolean).join(' · ');
+  document.getElementById('team-details').textContent=[niceDate(board.event.date),board.event.endDate!==board.event.date?niceDate(board.event.endDate):'',eventId==='test-team-duals'?'':board.event.location].filter(Boolean).join(' · ');
   const groups=[...new Set(board.spots.map(s=>s.division))];
-  grid.innerHTML=groups.map(division=>`<section class="team-division"><h2>${esc(division)}</h2><p>${esc([...new Set(board.spots.filter(s=>s.division===division).map(s=>[s.eligibility,s.allowance].filter(Boolean).join(' · ')))].filter(Boolean).join(' / '))}</p><div class="weight-grid">${board.spots.filter(s=>s.division===division).map(s=>{const type=s.status==='Open'?'Claim':'Backup',filled=s.status==='Filled',backupClosed=s.status==='Spoken for'&&s.backupAvailable===false,enabled=!filled&&!backupClosed&&board.accepting&&!!endpoint;return `<button class="weight-card ${s.status==='Open'?'spot-open':filled?'spot-filled':'spot-spoken'}" data-spot="${esc(s.id)}" data-type="${type}" ${enabled?'':'disabled'} aria-label="${esc(s.weight)} pounds, ${esc(s.status)}${filled?', no requests':type==='Claim'?', claim it':backupClosed?', backup list full':', backups welcome'}"><strong>${esc(s.weight)}</strong><span>${esc(s.status)}</span>${backupClosed?'<small>Backup list full</small>':''}</button>`;}).join('')}</div></section>`).join('')||'<p>No weight-class openings are published yet. Contact the club for team information.</p>';
+  const picker=document.getElementById('team-division-picker'),select=document.getElementById('team-division-select');
+  picker.hidden=groups.length<2;
+  if(!groups.includes(selectedDivision))selectedDivision=groups[0]||'';
+  select.innerHTML=groups.map(g=>`<option value="${esc(g)}" ${g===selectedDivision?'selected':''}>${esc(g)}</option>`).join('');
+  grid.innerHTML=groups.filter(g=>g===selectedDivision).map(division=>`<section class="team-division"><h2>${esc(division)}</h2><p>${esc([...new Set(board.spots.filter(s=>s.division===division).map(s=>[s.eligibility,s.allowance].filter(Boolean).join(' · ')))].filter(Boolean).join(' / '))}</p><div class="weight-grid">${board.spots.filter(s=>s.division===division).map(s=>{const type=s.status==='Open'?'Claim':'Backup',filled=s.status==='Filled',backupClosed=s.status==='Spoken for'&&s.backupAvailable===false,enabled=!filled&&!backupClosed&&board.accepting&&!!endpoint;return `<button class="weight-card ${s.status==='Open'?'spot-open':filled?'spot-filled':'spot-spoken'}" data-spot="${esc(s.id)}" data-type="${type}" ${enabled?'':'disabled'} aria-label="${s.weight==='UNL'?'Unlimited':esc(s.weight)+' pounds'}, ${esc(s.status)}${filled?', no requests':type==='Claim'?', claim it':backupClosed?', backup list full':', backups welcome'}"><strong>${esc(s.weight)}</strong><span>${esc(s.status)}</span>${backupClosed?'<small>Backup list full</small>':''}</button>`;}).join('')}</div></section>`).join('')||'<p>No weight-class openings are published yet. Contact the club for team information.</p>';
   message.textContent=board.accepting?'':endpoint?'Requests are closed.':'Signups are not available yet.';
   message.hidden=!message.textContent;
  }
@@ -28,6 +33,7 @@
  }catch(err){message.hidden=false;current=null;grid.innerHTML='';message.textContent='The team board is temporarily unavailable. Refresh or contact the club before requesting a place.';}finally{busy=false;}}
  grid.addEventListener('click',e=>{const button=e.target.closest('[data-spot]');if(!button||button.disabled||!current||!endpoint)return;const spot=current.spots.find(s=>s.id===button.dataset.spot);if(!spot)return;document.getElementById('team-request-title').textContent=button.dataset.type==='Claim'?'Claim a team spot':'Request a backup place';const frame=document.createElement('iframe'),u=new URL(endpoint);u.searchParams.set('event',eventId);u.searchParams.set('spot',spot.id);u.searchParams.set('type',button.dataset.type);frame.src=u.href;frame.title='Team Nauman private team request';frame.referrerPolicy='strict-origin-when-cross-origin';document.getElementById('team-request-body').replaceChildren(frame);dialog.showModal();});
  document.getElementById('team-request-close').addEventListener('click',()=>dialog.close());
+ document.getElementById('team-division-select').addEventListener('change',e=>{selectedDivision=e.target.value;if(current)render(current);});
  document.getElementById('team-refresh').addEventListener('click',load);
  window.addEventListener('message',e=>{const frame=document.querySelector('#team-request-body iframe');if(!frame||e.data?.type!=='tnwc-team-request-saved'||e.data.eventId!==eventId)return;let origin;try{origin=new URL(e.origin);}catch{return;}if(origin.protocol!=='https:'||!(origin.hostname==='script.google.com'||origin.hostname.endsWith('.googleusercontent.com')))return;load();});
  document.querySelector('.menu-toggle').addEventListener('click',e=>{const open=e.currentTarget.getAttribute('aria-expanded')!=='true';e.currentTarget.setAttribute('aria-expanded',String(open));document.getElementById('navigation').classList.toggle('open',open);});

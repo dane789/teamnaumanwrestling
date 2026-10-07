@@ -23,7 +23,7 @@ window.TNWC = {
   "practiceBoardFeed": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRYU0PeUzrTXbr4uX6rz8V1PzXxk1anPNVqGpm0fxnec4fQ8211_L5d6RG23tbU_eJ-y8EmbPSLG0of/pub?output=csv",
   "travelEventFeed": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTmj2TK_XHD27j9weNqii6wHwyCNwcs3_wJ4kguPJtYvHOffRzb7y2l_dTOUppvxUjkLwSCIGWXvH2U/pub?gid=902101003&single=true&output=csv",
   "teamSpotsFeed": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTmj2TK_XHD27j9weNqii6wHwyCNwcs3_wJ4kguPJtYvHOffRzb7y2l_dTOUppvxUjkLwSCIGWXvH2U/pub?gid=903101020&single=true&output=csv",
-  "teamBuilderServiceUrl": "",
+  "teamBuilderServiceUrl": "https://script.google.com/macros/s/AKfycbzAWTTZCkrFUOgxTVPea3NUtN5zhR6CqLe1gZtYilrqMTYGkxJAd-cgD2GVh_Dj-VY/exec",
   "registrationUrl": "",
   "tournamentInterestUrl": "",
   "publicResourcesUrl": "",

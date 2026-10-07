@@ -6,12 +6,12 @@
  let current=null,busy=false;
  function render(board){
   current=board;document.getElementById('team-title').textContent=board.event.title;
-  document.getElementById('team-details').textContent=[board.event.date,board.event.endDate!==board.event.date?board.event.endDate:'',board.event.location].filter(Boolean).join(' · ');
-  document.getElementById('team-test-note').hidden=!board.event.testOnly;
-  document.getElementById('team-service-note').hidden=!!endpoint;
+  const niceDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')?new Date(v+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):v;
+  document.getElementById('team-details').textContent=[niceDate(board.event.date),board.event.endDate!==board.event.date?niceDate(board.event.endDate):'',board.event.testOnly?'':board.event.location].filter(Boolean).join(' · ');
   const groups=[...new Set(board.spots.map(s=>s.division))];
-  grid.innerHTML=groups.map(division=>`<section class="team-division"><h2>${esc(division)}</h2><p>${esc([...new Set(board.spots.filter(s=>s.division===division).map(s=>[s.eligibility,s.allowance].filter(Boolean).join(' · ')))].filter(Boolean).join(' / '))}</p><div class="weight-grid">${board.spots.filter(s=>s.division===division).map(s=>{const type=s.status==='Open'?'Claim':'Backup',filled=s.status==='Filled',backupClosed=s.status==='Spoken for'&&s.backupAvailable===false,enabled=!filled&&!backupClosed&&board.accepting&&!!endpoint;return `<button class="weight-card ${s.status==='Open'?'spot-open':filled?'spot-filled':'spot-spoken'}" data-spot="${esc(s.id)}" data-type="${type}" ${enabled?'':'disabled'} aria-label="${esc(s.weight)} pounds, ${esc(s.status)}${filled?', no requests':type==='Claim'?', claim it':backupClosed?', backup list full':', backups welcome'}"><strong>${esc(s.weight)}</strong><span>${esc(s.status)}</span>${filled?'':`<small>${type==='Claim'?'Claim it':backupClosed?'Backup list full':'Backups welcome'}</small>`}</button>`;}).join('')}</div></section>`).join('')||'<p>No weight-class openings are published yet. Contact the club for team information.</p>';
-  message.textContent=endpoint?(board.accepting?'Choose an Open spot to claim it, or an available Spoken for spot to request a backup place.':'Requests for this tournament are closed.'):'Preview of the team board. Claims will open after the test service is authorized and connected.';
+  grid.innerHTML=groups.map(division=>`<section class="team-division"><h2>${esc(division)}</h2><p>${esc([...new Set(board.spots.filter(s=>s.division===division).map(s=>[s.eligibility,s.allowance].filter(Boolean).join(' · ')))].filter(Boolean).join(' / '))}</p><div class="weight-grid">${board.spots.filter(s=>s.division===division).map(s=>{const type=s.status==='Open'?'Claim':'Backup',filled=s.status==='Filled',backupClosed=s.status==='Spoken for'&&s.backupAvailable===false,enabled=!filled&&!backupClosed&&board.accepting&&!!endpoint;return `<button class="weight-card ${s.status==='Open'?'spot-open':filled?'spot-filled':'spot-spoken'}" data-spot="${esc(s.id)}" data-type="${type}" ${enabled?'':'disabled'} aria-label="${esc(s.weight)} pounds, ${esc(s.status)}${filled?', no requests':type==='Claim'?', claim it':backupClosed?', backup list full':', backups welcome'}"><strong>${esc(s.weight)}</strong><span>${esc(s.status)}</span>${backupClosed?'<small>Backup list full</small>':''}</button>`;}).join('')}</div></section>`).join('')||'<p>No weight-class openings are published yet. Contact the club for team information.</p>';
+  message.textContent=board.accepting?'':endpoint?'Requests are closed.':'Signups are not available yet.';
+  message.hidden=!message.textContent;
  }
  async function load(){if(busy)return;busy=true;try{
   let board;
@@ -25,7 +25,7 @@
    board={ok:true,event,spots,accepting:false};
   }
   if(!board.ok)throw Error(board.message||'Team board unavailable');render(board);
- }catch(err){current=null;grid.innerHTML='';message.textContent='The team board is temporarily unavailable. Refresh or contact the club before requesting a place.';}finally{busy=false;}}
+ }catch(err){message.hidden=false;current=null;grid.innerHTML='';message.textContent='The team board is temporarily unavailable. Refresh or contact the club before requesting a place.';}finally{busy=false;}}
  grid.addEventListener('click',e=>{const button=e.target.closest('[data-spot]');if(!button||button.disabled||!current||!endpoint)return;const spot=current.spots.find(s=>s.id===button.dataset.spot);if(!spot)return;document.getElementById('team-request-title').textContent=button.dataset.type==='Claim'?'Claim a team spot':'Request a backup place';const frame=document.createElement('iframe'),u=new URL(endpoint);u.searchParams.set('event',eventId);u.searchParams.set('spot',spot.id);u.searchParams.set('type',button.dataset.type);frame.src=u.href;frame.title='Team Nauman private team request';frame.referrerPolicy='strict-origin-when-cross-origin';document.getElementById('team-request-body').replaceChildren(frame);dialog.showModal();});
  document.getElementById('team-request-close').addEventListener('click',()=>dialog.close());
  document.getElementById('team-refresh').addEventListener('click',load);
